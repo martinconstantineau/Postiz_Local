@@ -5,8 +5,9 @@
 .gemini/
 .playwright-mcp/
 
-# Postgres data generated locally
-postiz-app-main/var/pgdata/
+# Postgres data / local logs generated during setup
+**/var/pgdata/
+**/pg.log
 
 # Local env files (the real repo already ignores these, this is a safety net)
 .env

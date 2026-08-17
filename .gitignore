@@ -14,3 +14,7 @@
 
 # Corepack/pnpm version marker
 version.txt
+
+# Build artifacts with undefined release names
+**/undefined/
+

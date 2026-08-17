@@ -1,0 +1,15 @@
+# Local environment / AI tool files
+.agents/
+.claude/
+.codex/
+.gemini/
+.playwright-mcp/
+
+# Postgres data generated locally
+postiz-app-main/var/pgdata/
+
+# Local env files (the real repo already ignores these, this is a safety net)
+.env
+
+# Corepack/pnpm version marker
+version.txt

@@ -332,7 +332,14 @@
       "undici": "6.28.0",
       "qs": "6.15.2",
       "tar": "7.5.21",
-      "form-data": "2.5.6"
+      "form-data": "2.5.6",
+      "lodash": "4.18.1",
+      "prismjs": "1.30.0",
+      "cross-spawn": "7.0.6",
+      "tough-cookie": "4.1.4",
+      "esbuild": "0.28.1",
+      "fast-xml-parser": "5.7.0",
+      "langsmith": "0.4.6"
     },
     "onlyBuiltDependencies": [
       "bcrypt"

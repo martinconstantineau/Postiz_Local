@@ -175,6 +175,7 @@
     "i18next-browser-languagedetector": "^8.2.1",
     "i18next-resources-to-backend": "^1.2.3",
     "image-to-pdf": "^3.0.2",
+    "ibm-cloud-sdk-core": "5.6.0",
     "ioredis": "^5.11.1",
     "isomorphic-dompurify": "^3.22.0",
     "json-to-graphql-query": "^2.3.0",
@@ -185,7 +186,7 @@
     "mime": "^3.0.0",
     "mime-types": "^2.1.35",
     "multer": "^2.2.0",
-    "music-metadata": "^7.14.0",
+    "music-metadata": "^11.12.3",
     "nestjs-command": "^3.1.5",
     "nestjs-real-ip": "^3.0.1",
     "nestjs-temporal-core": "^3.4.0",
@@ -321,6 +322,7 @@
   },
   "pnpm": {
     "overrides": {
+      "@langchain/community": "1.1.29",
       "next": "16.3.1",
       "react": "19.2.4",
       "react-dom": "19.2.4",
@@ -339,7 +341,12 @@
       "tough-cookie": "4.1.4",
       "esbuild": "0.28.1",
       "fast-xml-parser": "5.7.0",
-      "langsmith": "0.4.6"
+      "file-type": "21.3.4",
+      "ibm-cloud-sdk-core": "5.6.0",
+      "langsmith": "0.6.0",
+      "protobufjs": "8.7.2",
+      "@opentelemetry/exporter-trace-otlp-proto": "0.203.0",
+      "@opentelemetry/exporter-trace-otlp-http": "0.221.0"
     },
     "onlyBuiltDependencies": [
       "bcrypt"

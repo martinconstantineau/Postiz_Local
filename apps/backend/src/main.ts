@@ -24,7 +24,7 @@ async function start() {
   const app = await NestFactory.create(AppModule, {
     rawBody: true,
     cors: {
-      ...(!process.env.NOT_SECURED ? { credentials: true } : {}),
+      credentials: true,
       allowedHeaders: [
         'Content-Type',
         'Authorization',
@@ -40,11 +40,13 @@ async function start() {
         'x-copilotkit-runtime-client-gql-version',
         ...(process.env.NOT_SECURED ? ['auth', 'showorg', 'impersonate'] : []),
       ],
-      origin: [
-        process.env.FRONTEND_URL,
-        'http://localhost:6274',
-        ...(process.env.MAIN_URL ? [process.env.MAIN_URL] : []),
-      ],
+      origin: process.env.NOT_SECURED
+        ? true
+        : [
+            process.env.FRONTEND_URL,
+            'http://localhost:6274',
+            ...(process.env.MAIN_URL ? [process.env.MAIN_URL] : []),
+          ],
     },
   });
 

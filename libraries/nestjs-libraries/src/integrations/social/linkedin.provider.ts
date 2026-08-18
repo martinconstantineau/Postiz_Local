@@ -61,15 +61,17 @@ export class LinkedinProvider extends SocialAbstract implements SocialProvider {
   oneTimeToken = true;
 
   isBetweenSteps = false;
-  scopes = [
-    'openid',
-    'profile',
-    'w_member_social',
-    'r_basicprofile',
-    'rw_organization_admin',
-    'w_organization_social',
-    'r_organization_social',
-  ];
+  scopes = process.env.LINKEDIN_SCOPES
+    ? process.env.LINKEDIN_SCOPES.split(' ').filter(Boolean)
+    : [
+        'openid',
+        'profile',
+        'w_member_social',
+        'r_basicprofile',
+        'rw_organization_admin',
+        'w_organization_social',
+        'r_organization_social',
+      ];
   override maxConcurrentJob = 2;
   refreshWait = true;
   editor = 'normal' as const;
@@ -126,32 +128,43 @@ export class LinkedinProvider extends SocialAbstract implements SocialProvider {
   }
 
   async refreshToken(refresh_token: string): Promise<AuthTokenDetails> {
+    const refreshRes = await fetch('https://www.linkedin.com/oauth/v2/accessToken', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        grant_type: 'refresh_token',
+        refresh_token,
+        client_id: process.env.LINKEDIN_CLIENT_ID!,
+        client_secret: process.env.LINKEDIN_CLIENT_SECRET!,
+      }),
+    });
+
+    const refreshText = await refreshRes.text();
+    if (!refreshRes.ok) {
+      throw new Error(`LinkedIn token refresh failed: ${refreshText}`);
+    }
+
     const {
       access_token: accessToken,
       refresh_token: refreshToken,
       expires_in,
-    } = await (
-      await fetch('https://www.linkedin.com/oauth/v2/accessToken', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-          grant_type: 'refresh_token',
-          refresh_token,
-          client_id: process.env.LINKEDIN_CLIENT_ID!,
-          client_secret: process.env.LINKEDIN_CLIENT_SECRET!,
-        }),
-      })
-    ).json();
+    } = JSON.parse(refreshText);
 
-    const { vanityName } = await (
-      await fetch('https://api.linkedin.com/v2/me', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-    ).json();
+    let vanityName: string | undefined;
+    if (
+      this.scopes.includes('r_basicprofile') ||
+      this.scopes.includes('r_liteprofile')
+    ) {
+      ({ vanityName } = await (
+        await fetch('https://api.linkedin.com/v2/me', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+      ).json());
+    }
 
     const {
       name,
@@ -208,20 +221,25 @@ export class LinkedinProvider extends SocialAbstract implements SocialProvider {
     body.append('client_id', process.env.LINKEDIN_CLIENT_ID!);
     body.append('client_secret', process.env.LINKEDIN_CLIENT_SECRET!);
 
+    const tokenRes = await fetch('https://www.linkedin.com/oauth/v2/accessToken', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body,
+    });
+
+    const tokenText = await tokenRes.text();
+    if (!tokenRes.ok) {
+      throw new Error(`LinkedIn token exchange failed: ${tokenText}`);
+    }
+
     const {
       access_token: accessToken,
       expires_in: expiresIn,
       refresh_token: refreshToken,
       scope,
-    } = await (
-      await fetch('https://www.linkedin.com/oauth/v2/accessToken', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body,
-      })
-    ).json();
+    } = JSON.parse(tokenText);
 
     this.checkScopes(this.scopes, scope);
 
@@ -237,13 +255,19 @@ export class LinkedinProvider extends SocialAbstract implements SocialProvider {
       })
     ).json();
 
-    const { vanityName } = await (
-      await fetch('https://api.linkedin.com/v2/me', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-    ).json();
+    let vanityName: string | undefined;
+    if (
+      this.scopes.includes('r_basicprofile') ||
+      this.scopes.includes('r_liteprofile')
+    ) {
+      ({ vanityName } = await (
+        await fetch('https://api.linkedin.com/v2/me', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+      ).json());
+    }
 
     return {
       id,
